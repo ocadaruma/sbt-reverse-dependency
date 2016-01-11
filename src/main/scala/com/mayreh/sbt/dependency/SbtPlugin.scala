@@ -4,7 +4,6 @@ import sbt.Keys._
 import sbt._
 
 object SbtPlugin extends AutoPlugin {
-  type DependencyMap = Map[ProjectRef, Seq[ProjectRef]]
 
   object autoImport extends SbtPluginKeys
 
@@ -13,34 +12,48 @@ object SbtPlugin extends AutoPlugin {
   override def trigger = allRequirements
 
   override def projectSettings = Seq(
-    state <<= (state, buildDependencies) map { (stateValue, dependenciesValue) =>
-      val dependencyMap = dependenciesValue.classpathTransitive
+    state <<= (state, buildDependencies, loadedBuild) map { (state, dependencies, build) =>
+      val projectMap = build.allProjectRefs.toMap
 
-      val reverseDependencyMap = dependencyMap.foldLeft[DependencyMap](Map.empty) { (acc, dependency) =>
-        val (projectRef, dependOns) = dependency
+      val reverseDependencyMap = dependencies
+        .classpathTransitive
+        .foldLeft[DependencyMap](Map.empty) { (acc, dependency) =>
 
-        dependOns.foldLeft(acc) { (mapUpdate, key) =>
-          val refs = mapUpdate.getOrElse(key, Nil)
-          mapUpdate + (key -> (projectRef +: refs))
+        val (ref, dependOns) = dependency
+
+        dependOns.foldLeft(acc) { (dependencyMap, key) =>
+          val resolvedProjects = dependencyMap.getOrElse(key, Nil)
+          val newValue = projectMap.get(ref).fold(resolvedProjects)(_ +: resolvedProjects)
+          dependencyMap + (key -> newValue)
         }
       }
 
-      stateValue.put(reverseDependencyMapKey, reverseDependencyMap)
+      state.put(reverseDependencyMapKey, reverseDependencyMap)
     },
     reverseDependencySeparator in Global := "\n",
-    reverseDependency <<= (state, reverseDependencySeparator, thisProjectRef) map { (stateValue, separator, ref) =>
-      val dependOns = (for {
-        reverseDependencyMap <- stateValue.get(reverseDependencyMapKey)
-        projectRefs <- reverseDependencyMap.get(ref)
+    printBaseDirectory in Global := false,
+    reverseDependency <<= (
+      state,
+      reverseDependencySeparator,
+      printBaseDirectory,
+      thisProjectRef) map { (state, separator, printBaseDirectory, ref) =>
+
+      val resolvedProjects = (for {
+        reverseDependencyMap <- state.get(reverseDependencyMapKey)
+        projects <- reverseDependencyMap.get(ref)
       } yield {
-        projectRefs
+        projects
       }).getOrElse(Nil)
 
-      dependOns.headOption.foreach { _ =>
-        println(dependOns.map(_.project).mkString(separator))
+      resolvedProjects.headOption.foreach { _ =>
+        val str = resolvedProjects.map { resolved =>
+          if (printBaseDirectory) resolved.base.getAbsolutePath else resolved.id
+        } mkString separator
+
+        println(str)
       }
 
-      dependOns
+      resolvedProjects
     }
   )
 }

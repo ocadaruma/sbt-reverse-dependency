@@ -13,9 +13,9 @@ lazy val batch2 = project.dependsOn(batchCommon)
 /**
  * check tasks
  */
-def assertProjects(expected: Seq[String])(actual: Seq[ProjectRef]): Unit = {
+def assertProjects(expected: Seq[String])(actual: Seq[ResolvedProject]): Unit = {
   val expectedSet = expected.toSet
-  val actualSet = actual.map(_.project).toSet
+  val actualSet = actual.map(_.id).toSet
   assert(expectedSet == actualSet, s"projects should be $expectedSet but were $actualSet")
 }
 

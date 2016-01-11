@@ -4,7 +4,8 @@ import sbt._
 
 trait SbtPluginKeys {
   val reverseDependencySeparator = SettingKey[String]("reverse-dependency-separator", "separator string for printing projects.")
-  val reverseDependency = TaskKey[Seq[ProjectRef]]("reverse-dependency", "print and return which projects are depend on current project.")
+  val printBaseDirectory = SettingKey[Boolean]("print-base-directory", "print project base directory instead of project ID.")
+  val reverseDependency = TaskKey[Seq[ResolvedProject]]("reverse-dependency", "print and return which projects are depend on current project.")
 }
 
 object AttributeKeys {
