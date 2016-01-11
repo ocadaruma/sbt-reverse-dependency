@@ -32,11 +32,14 @@ object SbtPlugin extends AutoPlugin {
     },
     reverseDependencySeparator in Global := "\n",
     printBaseDirectory in Global := false,
+    printAbsolutePath in Global := false,
     reverseDependency <<= (
       state,
       reverseDependencySeparator,
       printBaseDirectory,
-      thisProjectRef) map { (state, separator, printBaseDirectory, ref) =>
+      printAbsolutePath,
+      thisProjectRef,
+      loadedBuild) map { (state, separator, printBaseDirectory, printAbsolutePath, ref, build) =>
 
       val resolvedProjects = (for {
         reverseDependencyMap <- state.get(reverseDependencyMapKey)
@@ -45,9 +48,17 @@ object SbtPlugin extends AutoPlugin {
         projects
       }).getOrElse(Nil)
 
+      val projectRoot = new File(build.root.getPath)
+
       resolvedProjects.headOption.foreach { _ =>
         val str = resolvedProjects.map { resolved =>
-          if (printBaseDirectory) resolved.base.getAbsolutePath else resolved.id
+          if (!printBaseDirectory) {
+            resolved.id
+          } else if (printAbsolutePath) {
+            resolved.base.getAbsolutePath
+          } else {
+            resolved.base.relativeTo(projectRoot).get
+          }
         } mkString separator
 
         println(str)
