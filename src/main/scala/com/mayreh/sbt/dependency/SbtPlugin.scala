@@ -57,7 +57,7 @@ object SbtPlugin extends AutoPlugin {
           } else if (printAbsolutePath) {
             resolved.base.getAbsolutePath
           } else {
-            resolved.base.relativeTo(projectRoot).get
+            resolved.base.relativeTo(projectRoot).get.getPath
           }
         } mkString separator
 
