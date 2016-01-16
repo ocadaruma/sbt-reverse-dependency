@@ -4,7 +4,7 @@ lazy val root = (project in file("."))
     name := "sbt-reverse-dependency",
     licenses += "MIT" -> url("https://raw.githubusercontent.com/ocadaruma/sbt-reverse-dependency/master/LICENSE"),
 
-    version := "0.1.1-SNAPSHOT",
+    version := "0.1.1",
     organization := "com.mayreh",
     organizationName := "Haruki Okada",
     startYear := Some(2016),
