@@ -9,8 +9,10 @@ trait SbtPluginKeys {
     "Print base directory instead of project ID.")
   val printAbsolutePath = SettingKey[Boolean]("print-absolute-path",
     "Print absolute path instead of related path. This option only affects when printBaseDirectory is true.")
+  val printReverseDependency = TaskKey[Unit]("print-reverse-dependency",
+    "Print which projects are depend on current project.")
   val reverseDependency = TaskKey[Seq[ResolvedProject]]("reverse-dependency",
-    "Print and return which projects are depend on current project.")
+    "Return which projects are depend on current project.")
 }
 
 object AttributeKeys {

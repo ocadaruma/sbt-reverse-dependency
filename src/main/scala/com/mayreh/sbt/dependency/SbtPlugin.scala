@@ -33,38 +33,31 @@ object SbtPlugin extends AutoPlugin {
     reverseDependencySeparator in Global := "\n",
     printBaseDirectory in Global := false,
     printAbsolutePath in Global := false,
-    reverseDependency <<= (
-      state,
-      reverseDependencySeparator,
-      printBaseDirectory,
-      printAbsolutePath,
-      thisProjectRef,
-      loadedBuild) map { (state, separator, printBaseDirectory, printAbsolutePath, ref, build) =>
-
-      val resolvedProjects = (for {
-        reverseDependencyMap <- state.get(reverseDependencyMapKey)
-        projects <- reverseDependencyMap.get(ref)
+    reverseDependency := {
+      for {
+        reverseDependencyMap <- state.value.get(reverseDependencyMapKey)
+        projects <- reverseDependencyMap.get(thisProjectRef.value)
       } yield {
         projects
-      }).getOrElse(Nil)
+      }
+    } getOrElse Nil,
+    printReverseDependency := {
+      val projects = reverseDependency.value
+      val buildRoot = new File(loadedBuild.value.root.getPath)
 
-      val projectRoot = new File(build.root.getPath)
-
-      resolvedProjects.headOption.foreach { _ =>
-        val str = resolvedProjects.map { resolved =>
-          if (!printBaseDirectory) {
-            resolved.id
-          } else if (printAbsolutePath) {
-            resolved.base.getAbsolutePath
+      projects.headOption.foreach { _ =>
+        val str = projects.map { project =>
+          if (!printBaseDirectory.value) {
+            project.id
+          } else if (printAbsolutePath.value) {
+            project.base.getAbsolutePath
           } else {
-            resolved.base.relativeTo(projectRoot).get.getPath
+            project.base.relativeTo(buildRoot).get.getPath
           }
-        } mkString separator
+        } mkString reverseDependencySeparator.value
 
         println(str)
       }
-
-      resolvedProjects
     }
   )
 }
