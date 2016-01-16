@@ -11,7 +11,7 @@ Show which projects are depend on a specific project in your multi-project build
 Add the plugin in project/plugins.sbt:
 
 ```scala
-addSbtPlugin("com.mayreh" % "sbt-reverse-dependency" % "0.1.0")
+addSbtPlugin("com.mayreh" % "sbt-reverse-dependency" % "0.1.1")
 ```
 
 ### Print reverse dependency
@@ -26,15 +26,17 @@ lazy val web = project.dependsOn(core)
 lazy val batch = project.dependsOn(core)
 ```
 
-Then, `reverseDependency` task works as below.
+Then, `printReverseDependency` task works as below.
 
 ```bash
-$ sbt core/reverseDependency
+$ sbt core/printReverseDependency
 web
 batch
-$ sbt web/reverseDependency    # print nothing
-$ sbt batch/reverseDependency  # print nothing
+$ sbt web/printReverseDependency    # print nothing
+$ sbt batch/printReverseDependency  # print nothing
 ```
+
+There is also `reverseDependency` task, which just return `Seq[ResolvedProject]`.
 
 ### Configurations
 
