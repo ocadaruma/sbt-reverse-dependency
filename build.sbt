@@ -1,6 +1,7 @@
 lazy val root = (project in file("."))
   .settings(
     sbtPlugin := true,
+    crossSbtVersions := Vector("0.13.16", "1.0.2"),
     name := "sbt-reverse-dependency",
     licenses += "MIT" -> url("https://raw.githubusercontent.com/ocadaruma/sbt-reverse-dependency/master/LICENSE"),
 
@@ -12,7 +13,6 @@ lazy val root = (project in file("."))
     /**
      * scripted test settings
      */
-    scriptedSettings,
     scriptedLaunchOpts += s"-Dplugin.version=${version.value}",
     scriptedBufferLog := false
   )
