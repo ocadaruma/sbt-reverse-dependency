@@ -20,9 +20,9 @@ def assertProjects(expected: Seq[String])(actual: Seq[ResolvedProject]): Unit = 
 }
 
 lazy val checkTasks = Seq(
-  TaskKey[Unit]("check-common") <<= reverseDependency in common map assertProjects(Seq("web", "batchCommon", "batch1", "batch2")),
-  TaskKey[Unit]("check-web") <<= reverseDependency in web map assertProjects(Nil),
-  TaskKey[Unit]("check-batch-common") <<= reverseDependency in batchCommon map assertProjects(Seq("batch1", "batch2")),
-  TaskKey[Unit]("check-batch1") <<= reverseDependency in batch1 map assertProjects(Nil),
-  TaskKey[Unit]("check-batch2") <<= reverseDependency in batch2 map assertProjects(Nil)
+  TaskKey[Unit]("checkCommon") := { assertProjects(Seq("web", "batchCommon", "batch1", "batch2"))((reverseDependency in common).value) },
+  TaskKey[Unit]("checkWeb") := { assertProjects(Nil)((reverseDependency in web).value) },
+  TaskKey[Unit]("checkBatchCommon") := { assertProjects(Seq("batch1", "batch2"))((reverseDependency in batchCommon).value) },
+  TaskKey[Unit]("checkBatch1") := { assertProjects(Nil)((reverseDependency in batch1).value) },
+  TaskKey[Unit]("checkBatch2") := { assertProjects(Nil)((reverseDependency in batch2).value) }
 )
