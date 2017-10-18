@@ -11,7 +11,7 @@ Show which projects are depend on a specific project in your multi-project build
 Add the plugin in project/plugins.sbt:
 
 ```scala
-addSbtPlugin("com.mayreh" % "sbt-reverse-dependency" % "0.1.1")
+addSbtPlugin("com.mayreh" % "sbt-reverse-dependency" % "0.2.0")
 ```
 
 ### Print reverse dependency
