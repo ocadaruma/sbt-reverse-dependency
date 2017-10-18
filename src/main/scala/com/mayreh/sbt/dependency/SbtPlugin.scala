@@ -12,10 +12,10 @@ object SbtPlugin extends AutoPlugin {
   override def trigger = allRequirements
 
   override def projectSettings = Seq(
-    state <<= (state, buildDependencies, loadedBuild) map { (state, dependencies, build) =>
-      val projectMap = build.allProjectRefs.toMap
+    state := {
+      val projectMap = loadedBuild.value.allProjectRefs.toMap
 
-      val reverseDependencyMap = dependencies
+      val reverseDependencyMap = buildDependencies.value
         .classpathTransitive
         .foldLeft[DependencyMap](Map.empty) { (acc, dependency) =>
 
@@ -28,7 +28,7 @@ object SbtPlugin extends AutoPlugin {
         }
       }
 
-      state.put(reverseDependencyMapKey, reverseDependencyMap)
+      state.value.put(reverseDependencyMapKey, reverseDependencyMap)
     },
     reverseDependencySeparator in Global := "\n",
     printBaseDirectory in Global := false,

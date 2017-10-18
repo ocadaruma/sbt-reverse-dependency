@@ -1,5 +1,5 @@
-> check-common
-> check-web
-> check-batch-common
-> check-batch1
-> check-batch2
+> checkCommon
+> checkWeb
+> checkBatchCommon
+> checkBatch1
+> checkBatch2
